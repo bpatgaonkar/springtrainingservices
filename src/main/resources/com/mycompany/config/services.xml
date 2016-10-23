@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+    <!-- Declarative Transaction Management through AOP -->
+    <!-- AOP configuration -->
+    <aop:aspectj-autoproxy />
+    <aop:config>
+        <!-- aop point-cut declaration with matching join-point -->
+        <aop:pointcut id="controllerMethods"
+                      expression="execution(* com.mycompany.config.plan.controller.*.*(..))"/>
+
+        <aop:pointcut id="daoMethods"
+                              expression="execution(* com.mycompany.config.plan.dao.*.*.*(..))"/>
+        
+        <aop:pointcut id="serviceAndDaoMethods"
+                              expression="execution(* com.mycompany.config.plan.dao.*.*.*(..)) or execution(* com.mycompany.config.plan.service.*.*.*(..))"/>
+                
+        <!-- aop point-cut waiving / applying -->                
+        <aop:advisor advice-ref="txAdviceRequired" pointcut-ref="controllerMethods"/>
+        <aop:advisor advice-ref="txAdviceRequired" pointcut-ref="serviceAndDaoMethods"/>
+        
+         
+        <aop:aspect ref="loggingAspect">
+            <aop:around pointcut-ref="serviceAndDaoMethods" method="log" />
+        </aop:aspect>
+
+        <aop:aspect ref="hibernateStatsAspect">
+            <aop:around pointcut-ref="daoMethods" method="printStatistics" />
+        </aop:aspect>
+	  	        
+    </aop:config>
+
+    <tx:advice id="txAdviceSupports" transaction-manager="transactionManager" >
+        <tx:attributes>
+            <tx:method name="*" propagation="SUPPORTS" isolation="READ_COMMITTED" />
+        </tx:attributes>
+    </tx:advice>
+	
+    <tx:advice id="txAdviceRequired" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="*" propagation="REQUIRED" isolation="READ_COMMITTED" />
+        </tx:attributes>
+    </tx:advice>
+
+    <bean id="loggingAspect" class="com.mycompany.config.plan.aspect.LoggingAspect" />
+	
+    <bean id="hibernateStatsAspect" class="com.mycompany.config.plan.aspect.HibernateStatisticAspect">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+	
+    <!-- Services -->
+    <bean name="activityService" class="com.mycompany.config.plan.service.impl.ActivityServiceImpl">  
+        <property name="activityDao" ref="activityDao"/>
+    </bean>
+
+    <bean name="planService" class="com.mycompany.config.plan.service.impl.PlanServiceImpl">  
+        <property name="planDao" ref="planDao"/>
+    </bean> 
+    <!-- Caused by: org.springframework.beans.factory.NoUniqueBeanDefinitionException: No qualifying bean of type [com.mycompany.config.plan.A] is defined: 
+   expected single matching bean but found 2: a,d
+   <bean id="a" class="com.mycompany.config.plan.C"/>
+   <bean id="d" class="com.mycompany.config.plan.D"/>
+   <bean id="b" class="com.mycompany.config.plan.B" autowire="byType"/>
+    -->
+</beans>    

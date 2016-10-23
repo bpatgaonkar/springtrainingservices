@@ -1,0 +1,47 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+	<relativePath>../springparent/pom.xml</relativePath>
+       <groupId>com.myproject</groupId>
+       <artifactId>springparent</artifactId>
+       <version>0.0.1-SNAPSHOT</version>
+   </parent>
+    
+  <artifactId>springtrainingservices</artifactId>
+  <packaging>jar</packaging>
+
+  <name>springtraining services layer</name>
+
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <springtraining.version>0.0.1-SNAPSHOT</springtraining.version>
+	<project.aspectjweaver.version>1.8.8</project.aspectjweaver.version>
+	<project.aspectjrt.version>1.8.5</project.aspectjrt.version>    
+  </properties>
+
+  <dependencies>
+	    
+    <dependency>
+    	<groupId>com.myproject</groupId>
+    	<artifactId>springtrainingdao</artifactId>
+    	<version>${springtraining.version}</version>
+    </dependency>
+	
+	<dependency>
+		<groupId>org.aspectj</groupId>
+		<artifactId>aspectjweaver</artifactId>
+		<version>${project.aspectjweaver.version}</version>
+	</dependency>
+
+	<dependency>
+		<groupId>org.aspectj</groupId>
+		<artifactId>aspectjrt</artifactId>
+		<version>${project.aspectjrt.version}</version>
+		<type>jar</type>
+	</dependency>
+  
+  </dependencies>
+</project>
